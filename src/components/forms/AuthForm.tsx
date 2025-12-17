@@ -41,6 +41,7 @@ export default function AuthForm({ type }: AuthFormProps) {
   const {
     register,
     handleSubmit,
+    setError: setFormError,
     formState: { errors },
   } = useForm<AuthFormData>({
     resolver: zodResolver(
@@ -59,7 +60,8 @@ export default function AuthForm({ type }: AuthFormProps) {
           email: data.email,
           password: data.password,
         });
-        // Adjust based on actual API response structure
+
+        // Response format: { success, message, data: { user, tokens } }
         const { user, tokens } = response.data.data;
         login(user, tokens.accessToken, tokens.refreshToken);
         router.push('/');
@@ -75,7 +77,27 @@ export default function AuthForm({ type }: AuthFormProps) {
       }
     } catch (err) {
       if (err instanceof AxiosError && err.response) {
-        setError(err.response.data.message || 'Authentication failed');
+        const status = err.response.status;
+        const data = err.response.data;
+
+        // Handle Validation Errors (400)
+        if (status === 400 && data.errors && Array.isArray(data.errors)) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          data.errors.forEach((errorItem: any) => {
+            if (
+              typeof errorItem === 'object' &&
+              errorItem.field &&
+              errorItem.message
+            ) {
+              setFormError(errorItem.field as keyof AuthFormData, {
+                type: 'server',
+                message: errorItem.message,
+              });
+            }
+          });
+        }
+
+        setError(data.message || 'Authentication failed');
       } else {
         setError('Something went wrong. Please try again.');
       }

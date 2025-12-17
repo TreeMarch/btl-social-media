@@ -2,17 +2,23 @@
 
 import { Menu, Transition } from '@headlessui/react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Fragment } from 'react';
 import { FaSignOutAlt, FaUserCircle } from 'react-icons/fa';
 
 import { useAuthStore } from '@/store/useAuthStore';
 
 export default function UserDropdown() {
+  const router = useRouter();
   const { user, logout } = useAuthStore();
+  function handleLogout() {
+    logout();
+    router.push('/login');
+  }
 
   return (
     <Menu as='div' className='relative'>
-      <Menu.Button className='flex items-center gap-2 rounded-full px-2 py-1 hover:bg-gray-100 transition'>
+      <Menu.Button className='flex items-center gap-2 rounded-full px-2 py-1 hover:bg-gray-100 transition cursor-pointer'>
         <FaUserCircle size={28} />
         <span className='hidden sm:block text-sm font-semibold text-gray-700'>
           {user?.username || user?.email || 'User'}
@@ -53,7 +59,7 @@ export default function UserDropdown() {
             <Menu.Item>
               {({ active }) => (
                 <button
-                  onClick={logout}
+                  onClick={handleLogout}
                   className={`flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 ${
                     active ? 'bg-red-50' : ''
                   }`}

@@ -6,7 +6,6 @@ import * as React from 'react';
 import { TiSocialTumblerCircular } from 'react-icons/ti';
 
 import UserDropdown from '@/components/dropdown/UserDropdown';
-import ButtonLink from '@/components/links/ButtonLink';
 import Skeleton from '@/components/Skeleton';
 
 import { useAuthStore } from '@/store/useAuthStore';
@@ -43,28 +42,7 @@ export default function Header() {
         </div>
 
         <div className='flex items-center gap-4'>
-          {isAuthenticated ? (
-            <UserDropdown />
-          ) : (
-            <div className='flex gap-2'>
-              <ButtonLink
-                href='/login'
-                variant='ghost'
-                size='sm'
-                className='bg-[#00bfff5e] hover:bg-[#00bfff80] text-gray-800'
-              >
-                Login
-              </ButtonLink>
-              <ButtonLink
-                href='/register'
-                variant='ghost'
-                size='sm'
-                className='bg-[#70ff00a3] hover:bg-[#70ff00c0] text-gray-800'
-              >
-                Register
-              </ButtonLink>
-            </div>
-          )}
+          {isAuthenticated && <UserDropdown />}
         </div>
       </div>
     </header>
